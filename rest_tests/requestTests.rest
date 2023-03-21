@@ -1,0 +1,18 @@
+
+@host = http://localhost:8882
+#@host = http://192.168.0.90
+
+
+### LOGIN
+# @name login
+POST  {{host}}/api/auth/login
+content-type: application/json
+
+{
+  "password":"persitt1passorja"
+}
+
+### LAST PERSONS
+@authToken = {{login.response.body.token}}
+GET {{host}}/api/items
+X-Auth-Token: {{authToken}}

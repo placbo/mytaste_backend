@@ -5,9 +5,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
-export const router = Router();
+export const authRouter = Router();
 
-router.post('/login', (req, res) => {
+authRouter.post('/login', (req, res) => {
   const valid = bcrypt.compareSync(req.body.password, ADMIN_PASSWORD);
   console.log('VALID?', valid);
   if (!valid) return res.sendStatus(401);
