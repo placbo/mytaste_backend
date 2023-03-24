@@ -9,7 +9,7 @@ POST  {{host}}/api/auth/login
 content-type: application/json
 
 {
-  "password":"persitt1passorja"
+  "password":"********"
 }
 
 ### LAST PERSONS
