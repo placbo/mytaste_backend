@@ -1,18 +1,16 @@
 
-@host = http://localhost:8882
-#@host = http://192.168.0.90
+@host = http://localhost:8882/api
+#@host = http://192.168.0.90/api
 
 
 ### LOGIN
 # @name login
-POST  {{host}}/api/auth/login
+POST  {{host}}/auth/login
 content-type: application/json
 
 {
   "password":"samplepassword_123"
 }
 
-### LAST PERSONS
-@authToken = {{login.response.body.token}}
-GET {{host}}/api/items
-X-Auth-Token: {{authToken}}
+### ALL ITEMS
+GET {{host}}/items

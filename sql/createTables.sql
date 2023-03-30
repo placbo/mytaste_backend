@@ -7,6 +7,7 @@ CREATE TABLE
         `imageURL` varchar(255) DEFAULT NULL,
         `creator` varchar(100) DEFAULT NULL,
         `averageRating` double DEFAULT NULL,
+        `averageRatingCount` int DEFAULT NULL,
         `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB AUTO_INCREMENT = 61 DEFAULT CHARSET = utf8mb3;

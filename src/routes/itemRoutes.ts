@@ -1,16 +1,24 @@
 import { Router } from 'express';
 import { db } from '../utils/db';
-import authMiddleware from '../middleware/authMiddleware';
 import { createErrorResponse } from '../utils/responseHelpers';
 
 export const itemRouter = Router();
 
-itemRouter.get('/', authMiddleware, async (_req, res) => {
+const emptyOrRows = (rows: any) => {
+  if (!rows) {
+    return [];
+  }
+  return rows;
+};
+
+itemRouter.get('/', async (_req, res) => {
   try {
     const [result] = await db.query('SELECT * FROM items');
-    if (result) {
+
+    const items = emptyOrRows(result);
+    if (items) {
       res.json({
-        result,
+        items,
       });
     } else {
       res.sendStatus(404);
