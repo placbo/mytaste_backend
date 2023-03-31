@@ -4,9 +4,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
 const port = process.env.PORT;
-import { db } from './utils/db';
 import { authRouter } from './routes/authRoutes';
 import { itemRouter } from './routes/itemRoutes';
+const ImageFolder = process.env.IMAGE_FOLDER || 'images/';
 
 const app: Express = express();
 app.use(logger('dev'));
@@ -27,6 +27,7 @@ app.get('/status', (req: Request, res: Response) => {
 //ROUTES
 app.use('/api/auth', authRouter);
 app.use('/api/items', itemRouter);
+app.use('/api/images', express.static(ImageFolder));
 
 app.listen(port, () => {
   console.log(`⚡️ Server is running at http://localhost:${port}`);
