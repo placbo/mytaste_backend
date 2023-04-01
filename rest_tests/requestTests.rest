@@ -21,8 +21,14 @@ GET {{host}}/items?page=2
 ### 2 FIRST ITEMS
 GET {{host}}/items?max=5&sort=desc&page=2
 
-
 ### 2 FIRST ITEMS
 GET {{host}}/items?max=5&sort=desc&page=1
 
+### ITEM BY ID
+GET {{host}}/items/534534
 
+### ITEM BY ID
+GET {{host}}/items/35/tags
+
+### ITEM BY ID
+GET {{host}}/items/32/reviews

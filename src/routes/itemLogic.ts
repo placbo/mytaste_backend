@@ -1,3 +1,4 @@
+import { ReviewRow, TagRow } from './../utils/types';
 import { db } from '../utils/db';
 import { emptyOrRows, getOffset } from './utils';
 
@@ -12,4 +13,19 @@ export async function getItems(page = 1, order = 'ASC', numberPrPage = 10) {
     items,
     meta,
   };
+}
+
+export async function getItemById(id: number) {
+  const [result] = await db.query(`SELECT * FROM items WHERE items.itemId = ${id}`);
+  return result[0];
+}
+
+export async function getTagsByItemId(id: number): Promise<TagRow[]> {
+  const [result] = await db.query(`SELECT * FROM tags WHERE tags.itemId = ${id}`);
+  return result;
+}
+
+export async function getReviewsByItemId(id: number): Promise<ReviewRow[]> {
+  const [result] = await db.query(`SELECT * FROM reviews WHERE reviews.itemId = ${id}`);
+  return result;
 }

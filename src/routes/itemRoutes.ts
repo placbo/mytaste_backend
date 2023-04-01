@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createErrorResponse } from '../utils/responseHelpers';
-import { getItems } from './itemLogic';
+import { TagRow } from '../utils/types';
+import { getItemById, getItems, getReviewsByItemId, getTagsByItemId } from './itemLogic';
 import { emptyOrRows } from './utils';
 
 export const itemRouter = Router();
@@ -22,6 +23,48 @@ itemRouter.get('/', async (req, res) => {
       res.sendStatus(404);
     }
   } catch (error: any) {
-    createErrorResponse(`Error while getting persons - ${error.message}`, res);
+    createErrorResponse(`Error while getting items - ${error.message}`, res);
+  }
+});
+
+itemRouter.get('/:id', async (req, res) => {
+  try {
+    const id = +req.params.id || 0;
+    const result = await getItemById(id);
+    if (result) {
+      res.json(result);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while getting item (${req.params.id}) - ${err.message}`, res);
+  }
+});
+
+itemRouter.get('/:id/tags', async (req, res) => {
+  try {
+    const id = +req.params.id || 0;
+    const result = await getTagsByItemId(id);
+    if (result) {
+      res.json(result.map((tagRow: TagRow) => tagRow.tag));
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while getting tags for item (${req.params.id}) - ${err.message}`, res);
+  }
+});
+
+itemRouter.get('/:id/reviews', async (req, res) => {
+  try {
+    const id = +req.params.id || 0;
+    const result = await getReviewsByItemId(id);
+    if (result) {
+      res.json(result);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while getting reviews for item (${req.params.id}) - ${err.message}`, res);
   }
 });
