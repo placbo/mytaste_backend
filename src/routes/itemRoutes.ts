@@ -1,25 +1,23 @@
 import { Router } from 'express';
-import { db } from '../utils/db';
 import { createErrorResponse } from '../utils/responseHelpers';
+import { getItems } from './itemLogic';
+import { emptyOrRows } from './utils';
 
 export const itemRouter = Router();
 
-const emptyOrRows = (rows: any) => {
-  if (!rows) {
-    return [];
-  }
-  return rows;
-};
-
-itemRouter.get('/', async (_req, res) => {
+itemRouter.get('/', async (req, res) => {
   try {
-    const [result] = await db.query('SELECT * FROM items');
+    let order = 'DESC';
+    if (req.query.sort && req.query.sort === 'asc') {
+      order = 'ASC';
+    }
+    const numberPrPage = req.query.max ? +req.query.max : 10;
+    const page = req.query.page ? +req.query.page : 1;
 
+    const result = await getItems(page, order, numberPrPage);
     const items = emptyOrRows(result);
     if (items) {
-      res.json({
-        items,
-      });
+      res.json(items);
     } else {
       res.sendStatus(404);
     }

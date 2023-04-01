@@ -12,5 +12,17 @@ content-type: application/json
   "password":"samplepassword_123"
 }
 
-### ALL ITEMS
+### LAST ITEMS
 GET {{host}}/items
+
+### LAST ITEMS (NEXT PAGE)
+GET {{host}}/items?page=2
+
+### 2 FIRST ITEMS
+GET {{host}}/items?max=5&sort=desc&page=2
+
+
+### 2 FIRST ITEMS
+GET {{host}}/items?max=5&sort=desc&page=1
+
+
