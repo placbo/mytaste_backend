@@ -1,7 +1,7 @@
 import { Router } from 'express';
+import authMiddleware from '../middleware/authMiddleware';
 import { createErrorResponse } from '../utils/responseHelpers';
-import { TagRow } from '../utils/types';
-import { getItemById, getItems, getReviewsByItemId, getTagsByItemId } from './itemLogic';
+import { addReviewToItem, addTagToItem, getItemById, getItems, getReviewsByItemId, getTagsByItemId } from './itemLogic';
 import { emptyOrRows } from './utils';
 
 export const itemRouter = Router();
@@ -46,7 +46,7 @@ itemRouter.get('/:id/tags', async (req, res) => {
     const id = +req.params.id || 0;
     const result = await getTagsByItemId(id);
     if (result) {
-      res.json(result.map((tagRow: TagRow) => tagRow.tag));
+      res.json(result);
     } else {
       res.sendStatus(404);
     }
@@ -66,5 +66,35 @@ itemRouter.get('/:id/reviews', async (req, res) => {
     }
   } catch (err: any) {
     createErrorResponse(`Error while getting reviews for item (${req.params.id}) - ${err.message}`, res);
+  }
+});
+
+itemRouter.post('/:id/tags', authMiddleware, async (req, res) => {
+  try {
+    const id = +req.params.id || 0;
+    const tag = req.body;
+    if (tag) {
+      const result = await addTagToItem(id, tag);
+      res.status(201);
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while adding tag (${err.message})`, res);
+  }
+});
+
+itemRouter.post('/:id/reviews', authMiddleware, async (req, res) => {
+  try {
+    const id = +req.params.id || 0;
+    const review = req.body;
+    if (review) {
+      const result = await addReviewToItem(id, review);
+      res.status(201);
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while adding review (${err.message})`, res);
   }
 });

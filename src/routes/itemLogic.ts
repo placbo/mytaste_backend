@@ -1,4 +1,4 @@
-import { ReviewRow, TagRow } from './../utils/types';
+import { Review, Tag } from './../utils/types';
 import { db } from '../utils/db';
 import { emptyOrRows, getOffset } from './utils';
 
@@ -20,12 +20,50 @@ export async function getItemById(id: number) {
   return result[0];
 }
 
-export async function getTagsByItemId(id: number): Promise<TagRow[]> {
+export async function getTagsByItemId(id: number): Promise<Tag[]> {
   const [result] = await db.query(`SELECT * FROM tags WHERE tags.itemId = ${id}`);
   return result;
 }
 
-export async function getReviewsByItemId(id: number): Promise<ReviewRow[]> {
+export async function getReviewsByItemId(id: number): Promise<Review[]> {
   const [result] = await db.query(`SELECT * FROM reviews WHERE reviews.itemId = ${id}`);
   return result;
 }
+
+export const addTagToItem = async (itemId: number, tag: string) => {
+  const result = await db.query(
+    `INSERT INTO tag
+      (itemId, tag) 
+      VALUES (
+        '${itemId}',
+        '${tag ?? ''}'
+      );`
+  );
+  console.log('Added tag: ' + tag + ' for item with id: ' + itemId);
+};
+
+export const deleteTagFromItem = async (itemId: number, tag: string) => {
+  const result = await db.query(
+    `INSERT INTO tag
+      (itemId, tag) 
+      VALUES (
+        '${itemId}',
+        '${tag ?? ''}'
+      );`
+  );
+  console.log('Added tag: ' + tag + ' for item with id: ' + itemId);
+};
+
+export const addReviewToItem = async (itemId: number, review: Review) => {
+  const result = await db.query(
+    `INSERT INTO tag
+      (itemId, comment, ) 
+      VALUES (
+        '${itemId}',
+        '${review.comment ?? ''}',
+        '${review.user ?? ''}',
+        '${review.rating}',
+      );`
+  );
+  console.log('Added rating from : ' + review.user + ' for item with id: ' + itemId);
+};
