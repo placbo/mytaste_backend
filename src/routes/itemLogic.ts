@@ -22,7 +22,7 @@ export async function getItemById(id: number): Promise<Item> {
 
 export async function getTagsByItemId(itemId: number): Promise<Tag[]> {
   const [result] = await db.query<Tag[]>(
-    `SELECT tags.tag FROM tags 
+    `SELECT tags.tagId, tags.tag FROM tags 
       INNER JOIN item_tag ON tags.tagId=item_tag.tagId
       WHERE item_tag.itemId = ?`,
     [itemId]

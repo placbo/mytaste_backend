@@ -43,15 +43,12 @@ itemRouter.get('/:id', async (req, res) => {
 });
 
 itemRouter.get('/:id/tags', async (req, res) => {
-  type tagResponse = {
-    tag: string;
-  };
   try {
     const id = +req.params.id || 0;
     const result = await getTagsByItemId(id);
-    const tags: tagResponse[] = emptyOrRows(result);
+    const tags = emptyOrRows(result);
     if (tags) {
-      res.json(tags.map((tag) => tag.tag));
+      res.json(tags);
     } else {
       res.sendStatus(404);
     }
