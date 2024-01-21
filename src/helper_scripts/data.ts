@@ -1,4 +1,18 @@
-export const items = [
+export type ItemTypeFromFirebase = {
+  date?: string;
+  image: string;
+  creator: string;
+  averageRatingCount: number;
+  rating?: string | null;
+  title: string;
+  tags: string[];
+  ratings?: any;
+  averageRating: number;
+  comment?: string;
+  id: string | null;
+};
+
+export const items: ItemTypeFromFirebase[] = [
   {
     date: '17.06.2021',
     image:
@@ -24,7 +38,7 @@ export const items = [
     averageRatingCount: 1,
     rating: null,
     title: 'Grønnsaksuppe Rema1000',
-    tags: ['Ferdigrett', ' suppe'],
+    tags: ['Ferdigrett', 'suppe'],
     ratings: {
       'perbjester@gmail.com': 2,
     },
@@ -40,7 +54,7 @@ export const items = [
     averageRatingCount: 3,
     rating: null,
     title: 'Pizza Grandiosa',
-    tags: ['Pizza', 'frysedisk', 'digg'],
+    tags: ['Pizza'],
     ratings: {
       'perbjester@gmail.com': 2,
       'nraanes2@gmail.com': 5,
@@ -158,7 +172,7 @@ export const items = [
     averageRatingCount: 1,
     rating: null,
     title: 'Pataks Jalfrezi curry sauce',
-    tags: ['Ssus'],
+    tags: ['saus'],
     ratings: {
       'perbjester@gmail.com': 2,
     },
@@ -196,6 +210,7 @@ export const items = [
     },
     averageRating: 3,
     id: null,
+    comment: '',
   },
   {
     date: '18.05.2021',
@@ -243,6 +258,7 @@ export const items = [
       'perbjester@gmail.com': 2,
       'emma.olivia.sindre@gmail.com': 2,
     },
+    comment: '',
     averageRating: 2,
     id: 'QKFiaTozHMn9nQwoAjjG',
   },
@@ -324,6 +340,8 @@ export const items = [
       'perbjester@gmail.com': 3,
       'gabriel.gregor@gmail.com': 5,
     },
+    comment: '',
+
     averageRating: 4,
     id: 'eoGinbjYNLujhv9YPPPL',
   },

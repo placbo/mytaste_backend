@@ -25,10 +25,10 @@ GET {{host}}/items?max=5&sort=desc&page=2
 GET {{host}}/items?max=5&sort=desc&page=1
 
 ### ITEM BY ID
-GET {{host}}/items/534534
+GET {{host}}/items/2
 
 ### ITEM BY ID
-GET {{host}}/items/35/tags
+GET {{host}}/items/2/tags
 
 ### ITEM BY ID
 GET {{host}}/items/32/reviews

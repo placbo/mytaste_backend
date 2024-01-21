@@ -3,6 +3,7 @@ import authMiddleware from '../middleware/authMiddleware';
 import { createErrorResponse } from '../utils/responseHelpers';
 import { addReviewToItem, addTagToItem, getItemById, getItems, getReviewsByItemId, getTagsByItemId } from './itemLogic';
 import { emptyOrRows } from './utils';
+import { Item } from '../utils/types';
 
 export const itemRouter = Router();
 
@@ -30,7 +31,7 @@ itemRouter.get('/', async (req, res) => {
 itemRouter.get('/:id', async (req, res) => {
   try {
     const id = +req.params.id || 0;
-    const result = await getItemById(id);
+    const result: Item = await getItemById(id);
     if (result) {
       res.json(result);
     } else {
@@ -42,11 +43,15 @@ itemRouter.get('/:id', async (req, res) => {
 });
 
 itemRouter.get('/:id/tags', async (req, res) => {
+  type tagResponse = {
+    tag: string;
+  };
   try {
     const id = +req.params.id || 0;
     const result = await getTagsByItemId(id);
-    if (result) {
-      res.json(result);
+    const tags: tagResponse[] = emptyOrRows(result);
+    if (tags) {
+      res.json(tags.map((tag) => tag.tag));
     } else {
       res.sendStatus(404);
     }
