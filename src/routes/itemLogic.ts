@@ -1,6 +1,7 @@
 import { Item, Review, Tag } from './../utils/types';
 import { db } from '../utils/db';
 import { emptyOrRows, getOffset } from './utils';
+import { ResultSetHeader } from 'mysql2';
 
 export async function getItems(page = 1, order = 'ASC', numberPrPage = 10) {
   const [totalResult] = await db.query<Item[]>(`SELECT COUNT(*) FROM items`);
@@ -34,6 +35,34 @@ export async function getReviewsByItemId(id: number): Promise<Review[]> {
   const [result] = await db.query<Review[]>('SELECT * FROM reviews WHERE reviews.itemId =  ?', [id]);
   return result;
 }
+
+export const addItem = async (item: Item) => {
+  const result = await db.query<ResultSetHeader>(
+    `INSERT INTO items
+      (title, creator) 
+      VALUES (
+        '${item.title}',
+        '${item.creator ?? ''}'
+      );`
+  );
+  const insertedId = result[0].insertId;
+  console.log('Added item with title: ' + item.title + ' with id: ' + insertedId);
+  return insertedId;
+};
+
+export const updateItem = async (item: Item, id: number) => {
+  const result = await db.query<ResultSetHeader>(
+    `UPDATE items SET
+      title = '${item.title}', 
+      WHERE itemId = ${id};`
+  );
+  console.log('Updated item with title: ' + item.title + ' with id: ' + id);
+};
+
+export const deleteItem = async (id: number) => {
+  const result = await db.query<ResultSetHeader>(`DELETE FROM items WHERE itemId = ${id};`);
+  console.log('Deleted item with id: ' + id);
+};
 
 export const addTagToItem = async (itemId: number, tag: string) => {
   const result = await db.query(

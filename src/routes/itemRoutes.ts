@@ -1,7 +1,17 @@
 import { Router } from 'express';
 import authMiddleware from '../middleware/authMiddleware';
 import { createErrorResponse } from '../utils/responseHelpers';
-import { addReviewToItem, addTagToItem, getItemById, getItems, getReviewsByItemId, getTagsByItemId } from './itemLogic';
+import {
+  addItem,
+  addReviewToItem,
+  addTagToItem,
+  deleteItem,
+  getItemById,
+  getItems,
+  getReviewsByItemId,
+  getTagsByItemId,
+  updateItem,
+} from './itemLogic';
 import { emptyOrRows } from './utils';
 import { Item } from '../utils/types';
 
@@ -92,11 +102,54 @@ itemRouter.post('/:id/reviews', authMiddleware, async (req, res) => {
     const review = req.body;
     if (review) {
       const result = await addReviewToItem(id, review);
-      res.status(201);
+      res.status(200);
     } else {
       res.status(400).json('Bad request');
     }
   } catch (err: any) {
     createErrorResponse(`Error while adding review (${err.message})`, res);
+  }
+});
+
+itemRouter.post('/', authMiddleware, async (req, res) => {
+  try {
+    const item = req.body;
+    if (item) {
+      const result = await addItem(item);
+      res.status(201).json({ id: result });
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while adding item (${err.message})`, res);
+  }
+});
+
+itemRouter.put('/:id', authMiddleware, async (req, res) => {
+  try {
+    const item = req.body;
+    const id = +req.params.id || 0;
+    if (id & item) {
+      const result = await updateItem(item, id);
+      res.status(200).json('OK');
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while updating item (${err.message})`, res);
+  }
+});
+
+itemRouter.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    const id = +req.params.id || 0;
+    if (id) {
+      const result = await deleteItem(id);
+      res.status(200).json('OK');
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while deleting item (${err.message})`, res);
   }
 });
