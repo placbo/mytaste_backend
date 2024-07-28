@@ -4,6 +4,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
 const port = process.env.PORT;
+const BASE_PATH = process.env.BASE_PATH;
+
 import { authRouter } from './routes/authRoutes';
 import { itemRouter } from './routes/itemRoutes';
 const ImageFolder = process.env.IMAGE_FOLDER || 'images/';
@@ -19,15 +21,15 @@ app.use(
   })
 );
 
-app.get('/status', (req: Request, res: Response) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.send(`<h1>Server running!</h1>`);
-});
-
 //ROUTES
-app.use('/api/auth', authRouter);
-app.use('/api/items', itemRouter);
-app.use('/api/images', express.static(ImageFolder));
+app.get(BASE_PATH + '/status', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`Server running!>`);
+});
+app.use(BASE_PATH + '/auth', authRouter);
+app.use(BASE_PATH + '/auth', authRouter);
+app.use(BASE_PATH + '/items', itemRouter);
+app.use(BASE_PATH + '/images', express.static(ImageFolder));
 
 app.listen(port, () => {
   console.log(`⚡️ Server is running at http://localhost:${port}`);
