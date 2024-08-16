@@ -1,0 +1,1 @@
+sudo mysqldump mytaste --result-file=mytaste_backup.sql
