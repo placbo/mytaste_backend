@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 import { resizeAndSave } from './imageUtils';
 export const router = Router();
 
-import { addNewItemImage } from './itemLogic';
+//import { addNewItemImage } from './itemLogic';
 //import imageLogic from '../services/imageLogic';
 import authMiddleware from '../middleware/authMiddleware';
 import { imageUploadMiddleWare } from './uploadImageMiddleware';
