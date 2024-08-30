@@ -1,10 +1,13 @@
 import { Router } from 'express';
 import authMiddleware from '../middleware/authMiddleware';
 import { createErrorResponse } from '../utils/responseHelpers';
+import { Item } from '../utils/types';
 import {
   addItem,
   addReviewToItem,
-  addTagToItem,
+  addTagToGlobalListIfNotExists,
+  addTagToItemIfNotExist as addTagToItemIfNotExists,
+  deleteAllTagsFromItem,
   deleteItem,
   getItemById,
   getItems,
@@ -13,7 +16,6 @@ import {
   updateItem,
 } from './itemLogic';
 import { emptyOrRows } from './utils';
-import { Item } from '../utils/types';
 
 export const itemRouter = Router();
 
@@ -81,13 +83,21 @@ itemRouter.get('/:id/reviews', async (req, res) => {
   }
 });
 
+//Erstatter alle tags for posten. (Ved nyregistrering)
 itemRouter.post('/:id/tags', authMiddleware, async (req, res) => {
   try {
-    const id = +req.params.id || 0;
-    const tag = req.body;
-    if (tag) {
-      const result = await addTagToItem(id, tag);
-      res.status(201);
+    const itemId = +req.params.id || 0;
+    const tags: string[] = req.body.tags;
+    if (tags) {
+      await deleteAllTagsFromItem(itemId);
+      for (const tag of tags) {
+        const tagToSave = tag.trim();
+        const tagId = await addTagToGlobalListIfNotExists(tagToSave);
+        if (tagId) await addTagToItemIfNotExists(itemId, tagId, tagToSave);
+        console.log('LAGRET 1 tag !');
+      }
+      console.log('LAGRET alle tags !');
+      res.status(201).json('OK');
     } else {
       res.status(400).json('Bad request');
     }
@@ -96,13 +106,32 @@ itemRouter.post('/:id/tags', authMiddleware, async (req, res) => {
   }
 });
 
+//Legger til 1 tag for posten & personen
+itemRouter.put('/:id/tags', authMiddleware, async (req, res) => {
+  try {
+    const id = +req.params.id || 0;
+    const tag = req.body.tag;
+    if (tag) {
+      const tagToSave = tag.trim();
+      const tagId = await addTagToGlobalListIfNotExists(tagToSave);
+      if (tagId) await addTagToItemIfNotExists(id, tagId, tagToSave);
+      res.status(201).json('OK');
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while adding tag (${err.message})`, res);
+  }
+});
+
+//NB! ingen put - kun 1 review pr bruker
 itemRouter.post('/:id/reviews', authMiddleware, async (req, res) => {
   try {
     const id = +req.params.id || 0;
     const review = req.body;
     if (review) {
-      const result = await addReviewToItem(id, review);
-      res.status(200);
+      await addReviewToItem(id, review);
+      res.status(201).json('OK');
     } else {
       res.status(400).json('Bad request');
     }

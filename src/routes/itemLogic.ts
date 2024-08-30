@@ -1,7 +1,8 @@
 import { Item, Review, Tag } from './../utils/types';
 import { db } from '../utils/db';
 import { emptyOrRows, getOffset } from './utils';
-import { ResultSetHeader } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { log } from 'console';
 
 export async function getItems(page = 1, order = 'ASC', numberPrPage = 10) {
   const [totalResult] = await db.query<Item[]>(`SELECT COUNT(*) FROM items`);
@@ -37,14 +38,14 @@ export async function getReviewsByItemId(id: number): Promise<Review[]> {
 }
 
 export const addItem = async (item: Item) => {
-  const result = await db.query<ResultSetHeader>(
-    `INSERT INTO items
-      (title, creator) 
-      VALUES (
-        '${item.title}',
-        '${item.creator ?? ''}'
-      );`
-  );
+  const sqlStatement = `INSERT INTO items
+  (title, creator, description) 
+  VALUES (
+    '${item.title}',
+    '${item.creator ?? ''}',
+    '${item.description ?? ''}'
+  );`;
+  const result = await db.query<ResultSetHeader>(sqlStatement);
   const insertedId = result[0].insertId;
   console.log('Added item with title: ' + item.title + ' with id: ' + insertedId);
   return insertedId;
@@ -64,54 +65,69 @@ export const deleteItem = async (id: number) => {
   console.log('Deleted item with id: ' + id);
 };
 
-export const addTagToItem = async (itemId: number, tag: string) => {
-  const result = await db.query(
-    `INSERT INTO tag
-      (itemId, tag) 
+export const addTagToGlobalListIfNotExists = async (tag: string) => {
+  if (tag.length > 0) {
+    const [result] = await db.query<RowDataPacket[]>('SELECT * FROM tags WHERE tags.tag = ?', [tag]);
+    if (result[0]) {
+      console.log('Tag eksisterer allerede: ', result[0].tagId);
+      return result[0].tagId;
+    } else {
+      const insertResult = await db.query<ResultSetHeader>(
+        `INSERT INTO tags
+      (tag) 
       VALUES (
-        '${itemId}',
-        '${tag ?? ''}'
+        '${tag}'
       );`
-  );
-  console.log('Added tag: ' + tag + ' for item with id: ' + itemId);
+      );
+      const insertedId = insertResult[0].insertId;
+      console.log('Added tag: ' + tag);
+      return insertedId;
+    }
+  }
 };
 
-export const deleteTagFromItem = async (itemId: number, tag: string) => {
-  const result = await db.query(
-    `INSERT INTO tag
-      (itemId, tag) 
+export const addTagToItemIfNotExist = async (itemId: number, tagId: number, tag: string) => {
+  console.log(`Prøvber å lagre tag med id: ${tagId}(${tag}) for item with id: ${itemId}`);
+  const [result] = await db.query<RowDataPacket[]>(
+    'SELECT * FROM item_tag WHERE item_tag.tagId = ? AND item_tag.itemId = ?',
+    [tagId, itemId]
+  );
+  if (result[0]) {
+    console.log(`Item (${itemId}) har allerede tag (${tag}) `);
+  } else {
+    const insertResult = await db.query<ResultSetHeader>(`INSERT INTO item_tag
+      (itemId, tagId) 
       VALUES (
         '${itemId}',
-        '${tag ?? ''}'
-      );`
-  );
-  console.log('Added tag: ' + tag + ' for item with id: ' + itemId);
+        '${tagId}'
+      );`);
+    console.log(`Added tag with id: ${tagId}(${tag}) for item with id: ${itemId}`);
+  }
+};
+
+// export const deleteTagFromItem = async (itemId: number, tag: string) => {
+//   const result = await db.query<ResultSetHeader>(`DELETE FROM item_tag WHERE itemId = ${itemId};`);
+//   console.log('Deleted tags from item with id: ' + itemId);
+// };
+
+export const deleteAllTagsFromItem = async (itemId: number) => {
+  const result = await db.query<ResultSetHeader>(`DELETE FROM item_tag WHERE itemId = ${itemId};`);
+  console.log('Deleted tags from item with id: ' + itemId);
 };
 
 export const addReviewToItem = async (itemId: number, review: Review) => {
-  const result = await db.query(
-    `INSERT INTO tag
-      (itemId, comment, ) 
-      VALUES (
-        '${itemId}',
-        '${review.comment ?? ''}',
-        '${review.user ?? ''}',
-        '${review.rating}',
-      );`
-  );
+  const sqlStatement = `INSERT INTO reviews
+  (itemId, comment, user, rating)
+  VALUES (
+    '${itemId}',
+    '${review.comment ?? ''}',
+    '${review.user ?? ''}',
+    '${review.rating}'
+  );`;
+  const result = await db.query(sqlStatement);
   console.log('Added rating from : ' + review.user + ' for item with id: ' + itemId);
 };
 
-export const addNewItemImage = async (itemId: number, review: Review) => {
-  const result = await db.query(
-    `INSERT INTO tag
-      (itemId, comment, ) 
-      VALUES (
-        '${itemId}',
-        '${review.comment ?? ''}',
-        '${review.user ?? ''}',
-        '${review.rating}',
-      );`
-  );
-  console.log('Added rating from : ' + review.user + ' for item with id: ' + itemId);
-};
+// export const addNewItemImage = async (itemId: number, review: Review) => {
+//   console.log('TO BE IMPLEMENTED');
+// };

@@ -1,5 +1,6 @@
+# Testfil for bruk med "REST Client"-plugin fra Huachao Mao i vscode
 
-@host = http://localhost:8882/api
+@host = http://localhost:8882/mytaste-api
 #@host = http://192.168.0.90/api
 
 
@@ -25,10 +26,55 @@ GET {{host}}/items?max=5&sort=desc&page=2
 GET {{host}}/items?max=5&sort=desc&page=1
 
 ### ITEM BY ID
-GET {{host}}/items/2
+GET {{host}}/items/68
 
-### ITEM BY ID
-GET {{host}}/items/2/tags
+### TAGS BY BY ITEM ID
+GET {{host}}/items/67/tags
 
-### ITEM BY ID
+### REVIEWS BY ITEM ID
 GET {{host}}/items/32/reviews
+
+### POST ITEM
+@authToken = {{login.response.body.token}}
+POST {{host}}/items
+X-Auth-Token: {{authToken}}
+content-type: application/json
+
+{
+ "title": "Cola",
+ "creator": "arne@bjarne.com",
+ "description": "beskrivelse"
+}
+
+### DELETE ITEM
+@authToken = {{login.response.body.token}}
+DELETE {{host}}/items/65
+X-Auth-Token: {{authToken}}
+content-type: application/json
+
+### POST NEW TAGS TO ITEM (DELETE OLD)
+@authToken = {{login.response.body.token}}
+POST {{host}}/items/68/tags
+X-Auth-Token: {{authToken}}
+content-type: application/json
+
+{
+ "tags": "xxx,xxx ,   yyy"
+}
+
+
+### POST REVIEW TO ITEM
+@authToken = {{login.response.body.token}}
+POST {{host}}/items/80/reviews
+X-Auth-Token: {{authToken}}
+content-type: application/json
+
+{ 
+ "comment": "rai rai rai",
+ "user": "arne@bjarne.com",
+ "rating": 2
+}
+
+
+### ITEM BY ID
+GET {{host}}/items/65
