@@ -2,30 +2,31 @@ import path from 'path';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import { ImageFolder, ThumbnailFolder, ThumbPrefix } from '../utils/constants';
+import fs from 'fs';
 
 export const resizeAndSave = async (buffer: Buffer) => {
-  const generatedFilename = `${uuidv4()}.png`;
+  const generatedFilename = `${uuidv4()}.jpg`;
 
-  //TODO: if folders does not exist - generate them
-  // if (!fs.existsSync(thumbnailFolder)) {
-  //   fs.mkdirSync(thumbnailFolder);
-  // }
+  //creates thumbnailfolder if not exists
+  if (!fs.existsSync(`${ImageFolder}${ThumbnailFolder}`)) {
+    fs.mkdirSync(`${ImageFolder}${ThumbnailFolder}`);
+  }
 
   //thumb
-  await sharp(buffer)
-    .resize(200, 200, {
-      fit: sharp.fit.inside,
-      withoutEnlargement: true,
-    })
-    .toFile(path.resolve(`${ImageFolder}${ThumbnailFolder}/${ThumbPrefix}${generatedFilename}`));
+  const thumbData = await sharp(buffer)
+    .rotate() //does not autorotate without exif
+    .resize({ width: 200, height: 200, fit: sharp.fit.inside, withoutEnlargement: true })
+    .jpeg({ quality: 80 })
+    .toBuffer();
+  fs.writeFileSync(path.resolve(`${ImageFolder}${ThumbnailFolder}/${ThumbPrefix}${generatedFilename}`), thumbData);
 
   //max size
-  await sharp(buffer)
-    .resize(2000, 2000, {
-      fit: sharp.fit.inside,
-      withoutEnlargement: true,
-    })
-    .toFile(path.resolve(`${ImageFolder}/${generatedFilename}`));
+  const imageData = await sharp(buffer)
+    .rotate() //does not autorotate without exif
+    .resize({ width: 2000, height: 2000, fit: sharp.fit.inside, withoutEnlargement: true })
+    .jpeg({ quality: 80 })
+    .toBuffer();
+  fs.writeFileSync(path.resolve(`${ImageFolder}/${generatedFilename}`), imageData);
 
   return generatedFilename;
 };
