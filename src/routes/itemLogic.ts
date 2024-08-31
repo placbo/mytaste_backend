@@ -128,6 +128,13 @@ export const addReviewToItem = async (itemId: number, review: Review) => {
   console.log('Added rating from : ' + review.user + ' for item with id: ' + itemId);
 };
 
-// export const addNewItemImage = async (itemId: number, review: Review) => {
-//   console.log('TO BE IMPLEMENTED');
-// };
+export const addNewItemImage = async (itemId: number, filename: string) => {
+  const sqlStatement = `UPDATE items
+  SET imageURL = '${filename ?? ''}'
+  WHERE itemId = '${itemId}'
+  `;
+  const result = await db.query<ResultSetHeader>(sqlStatement);
+  const insertedId = result[0].insertId;
+  console.log('Image added with id: ', insertedId);
+  return insertedId;
+};

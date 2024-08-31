@@ -8,6 +8,7 @@ const BASE_PATH = process.env.BASE_PATH;
 
 import { authRouter } from './routes/authRoutes';
 import { itemRouter } from './routes/itemRoutes';
+import { imageUploadRouter } from './routes/imageUploadRoutes';
 const ImageFolder = process.env.IMAGE_FOLDER || 'images/';
 
 const app: Express = express();
@@ -29,6 +30,7 @@ app.get(BASE_PATH + '/status', (req: Request, res: Response) => {
 app.use(BASE_PATH + '/auth', authRouter);
 app.use(BASE_PATH + '/auth', authRouter);
 app.use(BASE_PATH + '/items', itemRouter);
+app.use(BASE_PATH + '/imageupload', imageUploadRouter);
 app.use(BASE_PATH + '/images', express.static(ImageFolder));
 
 app.listen(port, () => {

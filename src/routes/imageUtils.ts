@@ -1,7 +1,7 @@
+import path from 'path';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import { ThumbnailFolder, ThumbPrefix, MediumImageFolder, ImageFolder } from '../utils/constants';
+import { ImageFolder, ThumbnailFolder, ThumbPrefix } from '../utils/constants';
 
 export const resizeAndSave = async (buffer: Buffer) => {
   const generatedFilename = `${uuidv4()}.png`;
@@ -13,19 +13,11 @@ export const resizeAndSave = async (buffer: Buffer) => {
 
   //thumb
   await sharp(buffer)
-    .resize(100, 100, {
+    .resize(200, 200, {
       fit: sharp.fit.inside,
       withoutEnlargement: true,
     })
     .toFile(path.resolve(`${ImageFolder}${ThumbnailFolder}/${ThumbPrefix}${generatedFilename}`));
-
-  //medium
-  await sharp(buffer)
-    .resize(400, 400, {
-      fit: sharp.fit.inside,
-      withoutEnlargement: true,
-    })
-    .toFile(path.resolve(`${ImageFolder}${MediumImageFolder}/${generatedFilename}`));
 
   //max size
   await sharp(buffer)
