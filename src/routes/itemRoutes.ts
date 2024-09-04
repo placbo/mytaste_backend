@@ -4,7 +4,6 @@ import { createErrorResponse } from '../utils/responseHelpers';
 import { Item } from '../utils/types';
 import {
   addItem,
-  addReviewToItem,
   addTagToGlobalListIfNotExists,
   addTagToItemIfNotExist as addTagToItemIfNotExists,
   deleteAllTagsFromItem,
@@ -13,6 +12,7 @@ import {
   getItems,
   getReviewsByItemId,
   getTagsByItemId,
+  setUsersReviewForItem,
   updateItem,
 } from './itemLogic';
 import { emptyOrRows } from './utils';
@@ -94,9 +94,7 @@ itemRouter.post('/:id/tags', authMiddleware, async (req, res) => {
         const tagToSave = tag.trim();
         const tagId = await addTagToGlobalListIfNotExists(tagToSave);
         if (tagId) await addTagToItemIfNotExists(itemId, tagId, tagToSave);
-        console.log('LAGRET 1 tag !');
       }
-      console.log('LAGRET alle tags !');
       res.status(201).json('OK');
     } else {
       res.status(400).json('Bad request');
@@ -130,7 +128,7 @@ itemRouter.post('/:id/reviews', authMiddleware, async (req, res) => {
     const id = +req.params.id || 0;
     const review = req.body;
     if (review) {
-      await addReviewToItem(id, review);
+      await setUsersReviewForItem(id, review);
       res.status(201).json('OK');
     } else {
       res.status(400).json('Bad request');
@@ -158,7 +156,7 @@ itemRouter.put('/:id', authMiddleware, async (req, res) => {
   try {
     const item = req.body;
     const id = +req.params.id || 0;
-    if (id & item) {
+    if (id && item) {
       const result = await updateItem(item, id);
       res.status(200).json('OK');
     } else {

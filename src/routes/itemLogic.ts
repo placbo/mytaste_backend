@@ -54,10 +54,10 @@ export const addItem = async (item: Item) => {
 export const updateItem = async (item: Item, id: number) => {
   const result = await db.query<ResultSetHeader>(
     `UPDATE items SET
-      title = '${item.title}', 
+      title = '${item.title}', description = '${item.description}'
       WHERE itemId = ${id};`
   );
-  console.log('Updated item with title: ' + item.title + ' with id: ' + id);
+  console.log('Updated item with data: ' + item + ' with id: ' + id);
 };
 
 export const deleteItem = async (id: number) => {
@@ -87,7 +87,6 @@ export const addTagToGlobalListIfNotExists = async (tag: string) => {
 };
 
 export const addTagToItemIfNotExist = async (itemId: number, tagId: number, tag: string) => {
-  console.log(`Prøvber å lagre tag med id: ${tagId}(${tag}) for item with id: ${itemId}`);
   const [result] = await db.query<RowDataPacket[]>(
     'SELECT * FROM item_tag WHERE item_tag.tagId = ? AND item_tag.itemId = ?',
     [tagId, itemId]
@@ -105,18 +104,15 @@ export const addTagToItemIfNotExist = async (itemId: number, tagId: number, tag:
   }
 };
 
-// export const deleteTagFromItem = async (itemId: number, tag: string) => {
-//   const result = await db.query<ResultSetHeader>(`DELETE FROM item_tag WHERE itemId = ${itemId};`);
-//   console.log('Deleted tags from item with id: ' + itemId);
-// };
-
 export const deleteAllTagsFromItem = async (itemId: number) => {
   const result = await db.query<ResultSetHeader>(`DELETE FROM item_tag WHERE itemId = ${itemId};`);
   console.log('Deleted tags from item with id: ' + itemId);
 };
 
-export const addReviewToItem = async (itemId: number, review: Review) => {
-  const sqlStatement = `INSERT INTO reviews
+export const setUsersReviewForItem = async (itemId: number, review: Review) => {
+  await db.query(`DELETE FROM reviews WHERE itemId = ? AND user = ?;`, [itemId, review.user]);
+
+  const insertSqlStatement = `INSERT INTO reviews
   (itemId, comment, user, rating)
   VALUES (
     '${itemId}',
@@ -124,7 +120,7 @@ export const addReviewToItem = async (itemId: number, review: Review) => {
     '${review.user ?? ''}',
     '${review.rating}'
   );`;
-  const result = await db.query(sqlStatement);
+  const result = await db.query(insertSqlStatement);
   console.log('Added rating from : ' + review.user + ' for item with id: ' + itemId);
 };
 
