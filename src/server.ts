@@ -28,7 +28,6 @@ app.get(BASE_PATH + '/status', (req: Request, res: Response) => {
   res.send(`Server running!>`);
 });
 app.use(BASE_PATH + '/auth', authRouter);
-app.use(BASE_PATH + '/auth', authRouter);
 app.use(BASE_PATH + '/items', itemRouter);
 app.use(BASE_PATH + '/imageupload', imageUploadRouter);
 app.use(BASE_PATH + '/images', express.static(ImageFolder));
