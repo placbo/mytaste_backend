@@ -10,7 +10,7 @@ POST  {{host}}/auth/login
 content-type: application/json
 
 {
-  "password":"samplepassword_123"
+  "password":"langtpaSSord"
 }
 
 ### LAST ITEMS

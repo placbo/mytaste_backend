@@ -3,21 +3,24 @@ import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 dotenv.config();
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const APP_ADMIN_PASSWORD_HASHED = process.env.APP_ADMIN_PASSWORD_HASHED || '';
+const APP_ADMIN_USERNAME = process.env.ADMIN_USERNAME || '';
+const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_EXPIRATION = process.env.JWT_EXPIRATION || '8h';
 
 export const authRouter = Router();
 
 authRouter.post('/login', (req, res) => {
-  const valid = bcrypt.compareSync(req.body.password, ADMIN_PASSWORD);
+  const valid = bcrypt.compareSync(req.body.password, APP_ADMIN_PASSWORD_HASHED);
   console.log('VALID?', valid);
   if (!valid) return res.sendStatus(401);
 
   const token = jwt.sign(
     {
-      id: 'PCB',
+      id: APP_ADMIN_USERNAME,
     },
-    process.env.ACCESS_TOKEN_SECRET || '',
-    { expiresIn: '8h' }
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRATION }
   );
 
   res.send({

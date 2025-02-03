@@ -3,14 +3,13 @@ import logger from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
-const port = process.env.PORT;
+const PORT = process.env.SERVER_PORT;
 const BASE_PATH = process.env.BASE_PATH;
 
 import { authRouter } from './routes/authRoutes';
 import { itemRouter } from './routes/itemRoutes';
 import { imageUploadRouter } from './routes/imageUploadRoutes';
-const ImageFolder = process.env.IMAGE_FOLDER || 'images/';
-
+const ImageFolder = process.env.IMAGE_FOLDER || '/images';
 const app: Express = express();
 app.use(logger('dev'));
 app.use(express.json());
@@ -32,6 +31,6 @@ app.use(BASE_PATH + '/items', itemRouter);
 app.use(BASE_PATH + '/imageupload', imageUploadRouter);
 app.use(BASE_PATH + '/images', express.static(ImageFolder));
 
-app.listen(port, () => {
-  console.log(`⚡️ Server is running at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`⚡️Server is running at http://localhost:${PORT}`);
 });
