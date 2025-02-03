@@ -8,8 +8,8 @@ export const resizeAndSave = async (buffer: Buffer) => {
   const generatedFilename = `${uuidv4()}.jpg`;
 
   //creates thumbnailfolder if not exists
-  if (!fs.existsSync(`${ImageFolder}/${ThumbnailFolder}`)) {
-    fs.mkdirSync(`${ImageFolder}/${ThumbnailFolder}`);
+  if (!fs.existsSync(`${ImageFolder}${ThumbnailFolder}`)) {
+    fs.mkdirSync(`${ImageFolder}${ThumbnailFolder}`);
   }
 
   //thumb
@@ -18,7 +18,7 @@ export const resizeAndSave = async (buffer: Buffer) => {
     .resize({ width: 200, height: 200, fit: sharp.fit.inside, withoutEnlargement: true })
     .jpeg({ quality: 80 })
     .toBuffer();
-  fs.writeFileSync(path.resolve(`${ImageFolder}/${ThumbnailFolder}/${ThumbPrefix}${generatedFilename}`), thumbData);
+  fs.writeFileSync(path.resolve(`${ImageFolder}${ThumbnailFolder}/${ThumbPrefix}${generatedFilename}`), thumbData);
 
   //max size
   const imageData = await sharp(buffer)
