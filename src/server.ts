@@ -1,16 +1,13 @@
 import express, { Express, Request, Response } from 'express';
 import logger from 'morgan';
 import cors from 'cors';
-import dotenv from 'dotenv';
-dotenv.config();
-const PORT = process.env.SERVER_PORT;
-const BASE_PATH = process.env.BASE_PATH;
-
 import { authRouter } from './routes/authRoutes';
 import { itemRouter } from './routes/itemRoutes';
 import { imageUploadRouter } from './routes/imageUploadRoutes';
-const ImageFolder = process.env.IMAGE_FOLDER || '/images';
+import { BasePath, ImageFolder, ServerPort } from './utils/constants';
+
 const app: Express = express();
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -22,15 +19,15 @@ app.use(
 );
 
 //ROUTES
-app.get(BASE_PATH + '/status', (req: Request, res: Response) => {
+app.get(BasePath + '/status', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/html');
   res.send(`Server running!>`);
 });
-app.use(BASE_PATH + '/auth', authRouter);
-app.use(BASE_PATH + '/items', itemRouter);
-app.use(BASE_PATH + '/imageupload', imageUploadRouter);
-app.use(BASE_PATH + '/images', express.static(ImageFolder));
+app.use(BasePath + '/auth', authRouter);
+app.use(BasePath + '/items', itemRouter);
+app.use(BasePath + '/imageupload', imageUploadRouter);
+app.use(BasePath + '/images', express.static(ImageFolder));
 
-app.listen(PORT, () => {
-  console.log(`⚡️Server is running at http://localhost:${PORT}`);
+app.listen(ServerPort, () => {
+  console.log(`⚡️Server is running at http://localhost:${ServerPort}`);
 });

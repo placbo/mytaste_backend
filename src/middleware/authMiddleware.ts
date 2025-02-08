@@ -1,8 +1,7 @@
 // Import dependencies
 import { verify } from 'jsonwebtoken';
 import { Response, Request } from 'express';
-import dotenv from 'dotenv';
-dotenv.config();
+import { JwtSecret } from '../utils/constants';
 
 export default (req: Request, res: Response, next: any) => {
   const token = req.header('x-auth-token');
@@ -15,7 +14,7 @@ export default (req: Request, res: Response, next: any) => {
     });
 
   try {
-    verify(token, process.env.ACCESS_TOKEN_SECRET || '');
+    verify(token, JwtSecret);
   } catch (error) {
     return res.status(401).send({
       success: false,
