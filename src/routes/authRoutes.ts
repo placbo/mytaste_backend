@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import { AppAdminPasswordHashed, AppAdminUsername, JwtSecret, JwtExpiration } from '../utils/constants';
+import { authenticateGoogle, handleGoogleCallback } from '../middleware/passport';
 
 export const authRouter = Router();
 
@@ -23,3 +24,6 @@ authRouter.post('/login', (req, res) => {
     token: token,
   });
 });
+
+authRouter.get('/google', authenticateGoogle);
+authRouter.get('/google/callback', handleGoogleCallback);
