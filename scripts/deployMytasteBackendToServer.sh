@@ -1,4 +1,4 @@
-cd ~/projects/mytaste-backend
+cd ~/github_repos/mytaste_backend
 git pull
 npm i
 npm run build
