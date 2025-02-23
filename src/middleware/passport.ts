@@ -1,8 +1,8 @@
+import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Request, Response, NextFunction } from 'express';
-import { JwtSecret } from '../utils/constants';
-import jwt from 'jsonwebtoken';
+import { JwtExpiration, JwtSecret } from '../utils/constants';
 
 passport.use(
   new GoogleStrategy(
@@ -12,12 +12,14 @@ passport.use(
       callbackURL: `${process.env.BASE_PATH}/auth/google/callback`,
     },
     (accessToken, refreshToken, profile, done) => {
+      console.log('PROFILE', profile.id);
       const user = {
         id: profile.id,
         displayName: profile.displayName,
         image: profile.photos?.[0].value,
-        isAdmin: profile.id === process.env.GOOGLE_CLIENT_SECRET,
+        isAdmin: profile.id === process.env.APP_ADMIN_ID,
       };
+
       return done(null, user);
     }
   )
@@ -40,15 +42,10 @@ export const handleGoogleCallback = (req: Request, res: Response, next: NextFunc
   passport.authenticate('google', { failureRedirect: '/login' }, (err, user) => {
     if (err) return next(err);
     if (!user) return res.redirect('/login');
-
-    // Generate JWT token with user id, displayName, and image
-    const token = jwt.sign(
-      { id: user.id, displayName: user.displayName, image: user.image, isAdmin: user.isAdmin },
-      JwtSecret,
-      {
-        expiresIn: '8h',
-      }
-    );
+    // Generate JWT token with user data
+    const token = jwt.sign({ ...user }, JwtSecret, {
+      expiresIn: JwtExpiration,
+    });
 
     res.redirect(`${process.env.FRONTEND_URL}/auth/success?token=${token}`);
   })(req, res, next);
