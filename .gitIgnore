@@ -1,5 +1,48 @@
-dist/
-node_modules/
-images/
+/images
+
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# production
+/build
+/build-node
+/dist
+/models
+junit.xml
 
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# misc
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+/.vscode
+.idea
+/pom
+*.tgz
+git-properties.json
+certs
+/build-node/
+
+.eslintcache
+.stylelintcache
+
+.scannerwork
+
+#Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
