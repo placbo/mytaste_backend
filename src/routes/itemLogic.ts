@@ -93,7 +93,7 @@ export const addTagToItemIfNotExist = async (itemId: number, tagId: number, tag:
   if (result[0]) {
     console.log(`Item (${itemId}) har allerede tag (${tag}) `);
   } else {
-    const insertResult = await db.query<ResultSetHeader>(`INSERT INTO item_tag
+     await db.query<ResultSetHeader>(`INSERT INTO item_tag
       (itemId, tagId) 
       VALUES (
         '${itemId}',
@@ -119,7 +119,7 @@ export const setUsersReviewForItem = async (itemId: number, review: Review) => {
     '${review.user ?? ''}',
     '${review.rating}'
   );`;
-  const result = await db.query(insertSqlStatement);
+   await db.query(insertSqlStatement);
   console.log('Added rating from : ' + review.user + ' for item with id: ' + itemId);
 };
 
