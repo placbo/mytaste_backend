@@ -13,7 +13,7 @@ imageUploadRouter.post('/', [authMiddleware, imageUploadMiddleWare.single('image
       res.status(401).json({ error: 'File is not provided' });
     } else {
       const filename = await resizeAndSave(req.file.buffer);
-      const newImageId = await addNewItemImage(itemId, filename);
+      await addNewItemImage(itemId, filename);
       res.status(200).json({ filename: filename });
     }
   } catch (error: any) {

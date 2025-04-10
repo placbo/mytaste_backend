@@ -157,7 +157,7 @@ itemRouter.put('/:id', authMiddleware, async (req, res) => {
     const item = req.body;
     const id = +req.params.id || 0;
     if (id && item) {
-      const result = await updateItem(item, id);
+      await updateItem(item, id);
       res.status(200).json('OK');
     } else {
       res.status(400).json('Bad request');
@@ -171,7 +171,7 @@ itemRouter.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const id = +req.params.id || 0;
     if (id) {
-      const result = await deleteItem(id);
+      await deleteItem(id);
       res.status(200).json('OK');
     } else {
       res.status(400).json('Bad request');
