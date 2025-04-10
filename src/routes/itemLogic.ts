@@ -1,8 +1,7 @@
-import { Item, Review, Tag } from './../utils/types';
+import { Item, Review, Tag } from '../utils/types';
 import { db } from '../utils/db';
 import { emptyOrRows, getOffset } from './utils';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
-import { log } from 'console';
 
 export async function getItems(page = 1, order = 'ASC', numberPrPage = 10) {
   const [totalResult] = await db.query<Item[]>(`SELECT COUNT(*) FROM items`);
@@ -52,7 +51,7 @@ export const addItem = async (item: Item) => {
 };
 
 export const updateItem = async (item: Item, id: number) => {
-  const result = await db.query<ResultSetHeader>(
+  await db.query<ResultSetHeader>(
     `UPDATE items SET
       title = '${item.title}', description = '${item.description}'
       WHERE itemId = ${id};`
@@ -61,7 +60,7 @@ export const updateItem = async (item: Item, id: number) => {
 };
 
 export const deleteItem = async (id: number) => {
-  const result = await db.query<ResultSetHeader>(`DELETE FROM items WHERE itemId = ${id};`);
+  await db.query<ResultSetHeader>(`DELETE FROM items WHERE itemId = ${id};`);
   console.log('Deleted item with id: ' + id);
 };
 
@@ -105,7 +104,7 @@ export const addTagToItemIfNotExist = async (itemId: number, tagId: number, tag:
 };
 
 export const deleteAllTagsFromItem = async (itemId: number) => {
-  const result = await db.query<ResultSetHeader>(`DELETE FROM item_tag WHERE itemId = ${itemId};`);
+  await db.query<ResultSetHeader>(`DELETE FROM item_tag WHERE itemId = ${itemId};`);
   console.log('Deleted tags from item with id: ' + itemId);
 };
 

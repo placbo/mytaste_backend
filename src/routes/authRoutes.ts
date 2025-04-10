@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import {Router} from 'express';
+import { Router } from 'express';
 import bcrypt from 'bcrypt';
-import {AppAdminPasswordHashed, AppAdminUsername, JwtExpiration, JwtSecret} from '../utils/constants';
+import { AppAdminPasswordHashed, AppAdminUsername, JwtExpiration, JwtSecret } from '../utils/constants';
 
 export const authRouter = Router();
 
