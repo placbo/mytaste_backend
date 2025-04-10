@@ -47,3 +47,4 @@ certs
 /blob-report/
 /playwright/.cache/
 
+/.idea/
