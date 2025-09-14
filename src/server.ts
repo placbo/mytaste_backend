@@ -26,9 +26,9 @@ app.use(
 );
 
 //ROUTES
-app.get(BasePath + '/status', (req: Request, res: Response) => {
+app.get(BasePath + '/status', (_: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/html');
-  res.send(`Server running!>`);
+  res.send(`Server running!`);
 });
 app.use(BasePath + '/auth', authRouter);
 app.use(BasePath + '/items', itemRouter);
