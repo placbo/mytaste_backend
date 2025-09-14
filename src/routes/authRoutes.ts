@@ -7,12 +7,12 @@ export const authRouter = Router();
 
 authRouter.post('/login', (req, res) => {
   const valid = bcrypt.compareSync(req.body.password, AppAdminPasswordHashed);
-  console.log('VALID?', valid);
   if (!valid) return res.sendStatus(401);
 
   const token = jwt.sign(
     {
       id: AppAdminUsername,
+      isAdmin: AppAdminUsername === 'pcb',
     },
     JwtSecret,
     { expiresIn: JwtExpiration }

@@ -13,7 +13,7 @@ export type User = {
 
 export default (req: Request, res: Response, next: any) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = authHeader?.split(' ')[1];
 
   if (!token) {
     return res.status(401).send({

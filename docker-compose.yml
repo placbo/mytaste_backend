@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mytaste_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mytaste
+      MYSQL_USER: mytaste_user
+      MYSQL_PASSWORD: mytaste_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backup/mytaste.sql:/docker-entrypoint-initdb.d/mytaste.sql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - mytaste_network
+
+volumes:
+  mysql_data:
+
+networks:
+  mytaste_network:
+    driver: bridge

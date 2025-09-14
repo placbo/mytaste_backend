@@ -18,6 +18,7 @@ app.use(
     origin: [
       'http://127.0.0.1:5173',
       'http://localhost:5173',
+      'http://localhost:3000',
       'http://mytaste.kasselars.com',
       'http://mytasteapi.kasselars.com',
     ],
