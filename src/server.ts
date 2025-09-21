@@ -10,25 +10,30 @@ import session from 'express-session';
 
 const app: Express = express();
 
+const baseOrigins = [
+  '127.0.0.1:5173',
+  'localhost:5173',
+  'localhost:3000',
+  'mytaste.kasselars.com',
+  'mytasteapi.kasselars.com',
+];
+
+const allowedOrigins = baseOrigins.flatMap((h) => [`http://${h}`, `https://${h}`]);
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: [
-      'http://127.0.0.1:5173',
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'http://mytaste.kasselars.com',
-      'http://mytasteapi.kasselars.com',
-    ],
+    origin: allowedOrigins,
+    credentials: true,
   })
 );
 
-//ROUTES
+// ROUTES
 app.get(BasePath + '/status', (_: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/html');
-  res.send(`Server running!`);
+  res.send('Server running!');
 });
 app.use(BasePath + '/auth', authRouter);
 app.use(BasePath + '/items', itemRouter);
