@@ -1,6 +1,6 @@
 # Testfil for bruk med "REST Client"-plugin fra Huachao Mao i vscode
 
-@host = http://localhost:8882/mytaste-api
+@host = http://localhost:8882/mytaste
 #@host = http://192.168.0.90/api
 
 
@@ -10,7 +10,7 @@ POST  {{host}}/auth/login
 content-type: application/json
 
 {
-  "password":"langtpaSSord"
+  "password":"test"
 }
 
 ### LAST ITEMS

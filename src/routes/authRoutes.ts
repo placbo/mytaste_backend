@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import { AppAdminPasswordHashed, AppAdminUsername, JwtExpiration, JwtSecret } from '../utils/constants';
+//import {authenticateGoogle, handleGoogleCallback} from '../middleware/passport';
 
 export const authRouter = Router();
 

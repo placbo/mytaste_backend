@@ -1,15 +1,15 @@
 import { verify } from 'jsonwebtoken';
 import { Response, Request } from 'express';
-import { JwtSecret } from '../utils/constants';
+import { AppAdminUsername, JwtSecret } from '../utils/constants';
 
-export type User = {
-  id: string;
-  displayName: string;
-  image: string;
-  iat: number;
-  exp: number;
-  isAdmin: boolean;
-};
+// export type User = {
+//   id: string;
+//   displayName: string;
+//   image: string;
+//   iat: number;
+//   exp: number;
+//   isAdmin: boolean;
+// };
 
 export default (req: Request, res: Response, next: any) => {
   const authHeader = req.headers['authorization'];
@@ -24,7 +24,7 @@ export default (req: Request, res: Response, next: any) => {
 
   try {
     const decoded: any = verify(token, JwtSecret);
-    if (decoded.id !== process.env.APP_ADMIN_ID) {
+    if (decoded.id !== AppAdminUsername) {
       return res.status(403).send({
         success: false,
         error: 'Access denied',
