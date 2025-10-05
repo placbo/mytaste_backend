@@ -13,7 +13,7 @@ authRouter.post('/login', (req, res) => {
   const token = jwt.sign(
     {
       id: AppAdminUsername,
-      isAdmin: AppAdminUsername === 'pcb',
+      isAdmin: true, //TODO: make dynamic when more users are added
     },
     JwtSecret,
     { expiresIn: JwtExpiration }
