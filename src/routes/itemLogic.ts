@@ -121,6 +121,25 @@ export const setUsersReviewForItem = async (itemId: number, review: Review) => {
   );`;
   await db.query(insertSqlStatement);
   console.log('Added rating from : ' + review.user + ' for item with id: ' + itemId);
+
+  // Calculate new averageRating and averageRatingCount
+  const [reviews] = await db.query(`SELECT rating FROM reviews WHERE itemId = ?`, [itemId]);
+  const ratings = Array.isArray(reviews) ? reviews.map((r: any) => r.rating).filter((r: any) => r !== null) : [];
+  const averageRatingCount = ratings.length;
+  let averageRating =
+    averageRatingCount > 0 ? ratings.reduce((a: number, b: number) => a + b, 0) / averageRatingCount : null;
+  // Round to 1 decimal
+  averageRating = averageRating !== null ? Math.round(averageRating * 10) / 10 : null;
+
+  // Update item with new values
+  await db.query(`UPDATE items SET averageRating = ?, averageRatingCount = ? WHERE itemId = ?`, [
+    averageRating,
+    averageRatingCount,
+    itemId,
+  ]);
+  console.log(
+    'Updated item with new averageRating: ' + averageRating + ' and averageRatingCount: ' + averageRatingCount
+  );
 };
 
 export const addNewItemImage = async (itemId: number, filename: string) => {
