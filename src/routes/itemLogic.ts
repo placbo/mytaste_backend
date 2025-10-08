@@ -9,9 +9,36 @@ export async function getItems(page = 1, order = 'ASC', numberPrPage = 10) {
   const offset = getOffset(page, numberPrPage);
   const [result] = await db.query(`SELECT * FROM items ORDER BY items.itemId ${order} LIMIT ${offset},${numberPrPage}`);
   const items = emptyOrRows(result);
+
+  // Get all itemIds from the current page
+  const itemIds = items.map((item: any) => item.itemId);
+  let tagsByItemId: Record<number, Tag[]> = {};
+  if (itemIds.length > 0) {
+    // Fetch all tags for these items in one query
+    const [tagsResult] = await db.query<RowDataPacket[]>(
+      `SELECT item_tag.itemId, tags.tagId, tags.tag FROM item_tag 
+        INNER JOIN tags ON tags.tagId = item_tag.tagId
+        WHERE item_tag.itemId IN (${itemIds.join(',')})`
+    );
+    console.log(tagsResult);
+    // Group tags by itemId
+    tagsByItemId = tagsResult.reduce((acc: any, row: any) => {
+      if (!acc[row.itemId]) acc[row.itemId] = [];
+      acc[row.itemId].push({ tagId: row.tagId, tag: row.tag });
+      return acc;
+    }, {});
+    console.log(tagsByItemId);
+  }
+
+  // Attach tags to each item
+  const itemsWithTags = items.map((item: any) => ({
+    ...item,
+    tags: tagsByItemId[item.itemId] || [],
+  }));
+
   const meta = { page, total };
   return {
-    items,
+    items: itemsWithTags,
     meta,
   };
 }
