@@ -1,4 +1,4 @@
-import { Item, Review, Tag } from '../utils/types';
+import { Item, Review, Tag, TagWithUsageCount } from '../utils/types';
 import { db } from '../utils/db';
 import { emptyOrRows, getOffset } from './utils';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
@@ -99,8 +99,14 @@ export async function getItemById(id: number): Promise<Item> {
   return result[0];
 }
 
-export async function getAllTags(): Promise<Tag[]> {
-  const [result] = await db.query<Tag[]>('SELECT tagId, tag FROM tags ORDER BY tag ASC');
+export async function getAllTags(): Promise<TagWithUsageCount[]> {
+  const [result] = await db.query<TagWithUsageCount[]>(`
+    SELECT tags.tagId, tags.tag, COUNT(item_tag.itemId) as usageCount
+    FROM tags 
+    LEFT JOIN item_tag ON tags.tagId = item_tag.tagId
+    GROUP BY tags.tagId, tags.tag
+    ORDER BY tag ASC
+  `);
   return result;
 }
 

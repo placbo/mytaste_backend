@@ -6,6 +6,13 @@ export interface Tag extends RowDataPacket {
   tag: string;
 }
 
+export interface TagWithUsageCount extends RowDataPacket {
+  tagId: number;
+  itemId: number;
+  tag: string;
+  usageCount?: number;
+}
+
 export interface Review extends RowDataPacket {
   reviewId: number;
   itemId: number;
