@@ -46,18 +46,31 @@ export async function getItems(page = 1, order = 'ASC', numberPrPage = 10) {
 export async function searchItems(searchQuery: string, page = 1, order = 'ASC', numberPrPage = 10) {
   const searchTerm = `%${searchQuery}%`;
 
-  // Get total count of matching items
-  const [totalResult] = await db.query<RowDataPacket[]>(`SELECT COUNT(*) as count FROM items WHERE title LIKE ?`, [
-    searchTerm,
-  ]);
+  // Get total count of matching items (by title OR by tags)
+  const [totalResult] = await db.query<RowDataPacket[]>(
+    `
+    SELECT COUNT(DISTINCT items.itemId) as count 
+    FROM items 
+    LEFT JOIN item_tag ON items.itemId = item_tag.itemId
+    LEFT JOIN tags ON item_tag.tagId = tags.tagId
+    WHERE items.title LIKE ? OR tags.tag LIKE ?
+  `,
+    [searchTerm, searchTerm]
+  );
   const total = totalResult[0].count;
 
   const offset = getOffset(page, numberPrPage);
 
-  // Get paginated search results
+  // Get paginated search results (by title OR by tags)
   const [result] = await db.query<RowDataPacket[]>(
-    `SELECT * FROM items WHERE title LIKE ? ORDER BY items.itemId ${order} LIMIT ${offset},${numberPrPage}`,
-    [searchTerm]
+    `SELECT DISTINCT items.* 
+     FROM items 
+     LEFT JOIN item_tag ON items.itemId = item_tag.itemId
+     LEFT JOIN tags ON item_tag.tagId = tags.tagId
+     WHERE items.title LIKE ? OR tags.tag LIKE ?
+     ORDER BY items.itemId ${order} 
+     LIMIT ${offset},${numberPrPage}`,
+    [searchTerm, searchTerm]
   );
   const items = emptyOrRows(result);
 
