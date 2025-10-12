@@ -8,6 +8,7 @@ import {
   addTagToItemIfNotExist as addTagToItemIfNotExists,
   deleteAllTagsFromItem,
   deleteItem,
+  getAllTags,
   getItemById,
   getItems,
   getReviewsByItemId,
@@ -19,6 +20,20 @@ import {
 import { emptyOrRows } from '../services/utils';
 
 export const itemController = Router();
+
+itemController.get('/tags', async (req, res) => {
+  try {
+    const result = await getAllTags();
+    const tags = emptyOrRows(result);
+    if (tags) {
+      res.json(tags);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while getting tags - ${err.message}`, res);
+  }
+});
 
 itemController.get('/search', async (req, res) => {
   try {

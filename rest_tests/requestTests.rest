@@ -31,6 +31,9 @@ GET {{host}}/items/68
 ### TAGS BY BY ITEM ID
 GET {{host}}/items/67/tags
 
+### TAGS
+GET {{host}}/items/tags
+
 ### REVIEWS BY ITEM ID
 GET {{host}}/items/32/reviews
 

@@ -99,6 +99,11 @@ export async function getItemById(id: number): Promise<Item> {
   return result[0];
 }
 
+export async function getAllTags(): Promise<Tag[]> {
+  const [result] = await db.query<Tag[]>('SELECT tagId, tag FROM tags ORDER BY tag ASC');
+  return result;
+}
+
 export async function getTagsByItemId(itemId: number): Promise<Tag[]> {
   const [result] = await db.query<Tag[]>(
     `SELECT tags.tagId, tags.tag FROM tags 
