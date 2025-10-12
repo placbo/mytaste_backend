@@ -43,6 +43,57 @@ export async function getItems(page = 1, order = 'ASC', numberPrPage = 10) {
   };
 }
 
+export async function searchItems(searchQuery: string, page = 1, order = 'ASC', numberPrPage = 10) {
+  const searchTerm = `%${searchQuery}%`;
+
+  // Get total count of matching items
+  const [totalResult] = await db.query<RowDataPacket[]>(`SELECT COUNT(*) as count FROM items WHERE title LIKE ?`, [
+    searchTerm,
+  ]);
+  const total = totalResult[0].count;
+
+  const offset = getOffset(page, numberPrPage);
+
+  // Get paginated search results
+  const [result] = await db.query<RowDataPacket[]>(
+    `SELECT * FROM items WHERE title LIKE ? ORDER BY items.itemId ${order} LIMIT ${offset},${numberPrPage}`,
+    [searchTerm]
+  );
+  const items = emptyOrRows(result);
+
+  // Get all itemIds from the current page
+  const itemIds = items.map((item: any) => item.itemId);
+  let tagsByItemId: Record<number, Tag[]> = {};
+  if (itemIds.length > 0) {
+    // Fetch all tags for these items in one query
+    const [tagsResult] = await db.query<RowDataPacket[]>(
+      `SELECT item_tag.itemId, tags.tagId, tags.tag FROM item_tag 
+        INNER JOIN tags ON tags.tagId = item_tag.tagId
+        WHERE item_tag.itemId IN (${itemIds.join(',')})`
+    );
+    console.log(tagsResult);
+    // Group tags by itemId
+    tagsByItemId = tagsResult.reduce((acc: any, row: any) => {
+      if (!acc[row.itemId]) acc[row.itemId] = [];
+      acc[row.itemId].push({ tagId: row.tagId, tag: row.tag });
+      return acc;
+    }, {});
+    console.log(tagsByItemId);
+  }
+
+  // Attach tags to each item
+  const itemsWithTags = items.map((item: any) => ({
+    ...item,
+    tags: tagsByItemId[item.itemId] || [],
+  }));
+
+  const meta = { page, total };
+  return {
+    items: itemsWithTags,
+    meta,
+  };
+}
+
 export async function getItemById(id: number): Promise<Item> {
   const [result] = await db.query<Item[]>('SELECT * FROM items WHERE items.itemId = ?', [id]);
   return result[0];

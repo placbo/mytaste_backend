@@ -12,12 +12,40 @@ import {
   getItems,
   getReviewsByItemId,
   getTagsByItemId,
+  searchItems,
   setUsersReviewForItem,
   updateItem,
 } from './itemLogic';
 import { emptyOrRows } from './utils';
 
 export const itemRouter = Router();
+
+itemRouter.get('/search', async (req, res) => {
+  try {
+    const searchQuery = req.query.q as string;
+
+    if (!searchQuery || searchQuery.trim().length === 0) {
+      return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    let order = 'DESC';
+    if (req.query.sort && req.query.sort === 'asc') {
+      order = 'ASC';
+    }
+    const numberPrPage = req.query.max ? +req.query.max : 10;
+    const page = req.query.page ? +req.query.page : 1;
+
+    const result = await searchItems(searchQuery.trim(), page, order, numberPrPage);
+    const items = emptyOrRows(result);
+    if (items) {
+      res.json(items);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (error: any) {
+    createErrorResponse(`Error while searching items - ${error.message}`, res);
+  }
+});
 
 itemRouter.get('/', async (req, res) => {
   try {
