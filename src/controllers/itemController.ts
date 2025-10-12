@@ -15,12 +15,12 @@ import {
   searchItems,
   setUsersReviewForItem,
   updateItem,
-} from './itemLogic';
-import { emptyOrRows } from './utils';
+} from '../services/itemService';
+import { emptyOrRows } from '../services/utils';
 
-export const itemRouter = Router();
+export const itemController = Router();
 
-itemRouter.get('/search', async (req, res) => {
+itemController.get('/search', async (req, res) => {
   try {
     const searchQuery = req.query.q as string;
 
@@ -47,7 +47,7 @@ itemRouter.get('/search', async (req, res) => {
   }
 });
 
-itemRouter.get('/', async (req, res) => {
+itemController.get('/', async (req, res) => {
   try {
     let order = 'DESC';
     if (req.query.sort && req.query.sort === 'asc') {
@@ -68,7 +68,7 @@ itemRouter.get('/', async (req, res) => {
   }
 });
 
-itemRouter.get('/:id', async (req, res) => {
+itemController.get('/:id', async (req, res) => {
   try {
     const id = +req.params.id || 0;
     const result: Item = await getItemById(id);
@@ -82,7 +82,7 @@ itemRouter.get('/:id', async (req, res) => {
   }
 });
 
-itemRouter.get('/:id/tags', async (req, res) => {
+itemController.get('/:id/tags', async (req, res) => {
   try {
     const id = +req.params.id || 0;
     const result = await getTagsByItemId(id);
@@ -97,7 +97,7 @@ itemRouter.get('/:id/tags', async (req, res) => {
   }
 });
 
-itemRouter.get('/:id/reviews', async (req, res) => {
+itemController.get('/:id/reviews', async (req, res) => {
   try {
     const id = +req.params.id || 0;
     const result = await getReviewsByItemId(id);
@@ -112,7 +112,7 @@ itemRouter.get('/:id/reviews', async (req, res) => {
 });
 
 //Erstatter alle tags for posten. (Ved nyregistrering)
-itemRouter.post('/:id/tags', authMiddleware, async (req, res) => {
+itemController.post('/:id/tags', authMiddleware, async (req, res) => {
   try {
     const itemId = +req.params.id || 0;
     const tags: string[] = req.body.tags;
@@ -133,7 +133,7 @@ itemRouter.post('/:id/tags', authMiddleware, async (req, res) => {
 });
 
 //Legger til 1 tag for posten & personen
-itemRouter.put('/:id/tags', authMiddleware, async (req, res) => {
+itemController.put('/:id/tags', authMiddleware, async (req, res) => {
   try {
     const id = +req.params.id || 0;
     const tag = req.body.tag;
@@ -151,7 +151,7 @@ itemRouter.put('/:id/tags', authMiddleware, async (req, res) => {
 });
 
 //NB! ingen put - kun 1 review pr bruker
-itemRouter.post('/:id/reviews', authMiddleware, async (req, res) => {
+itemController.post('/:id/reviews', authMiddleware, async (req, res) => {
   try {
     const id = +req.params.id || 0;
     const review = req.body;
@@ -166,7 +166,7 @@ itemRouter.post('/:id/reviews', authMiddleware, async (req, res) => {
   }
 });
 
-itemRouter.post('/', authMiddleware, async (req, res) => {
+itemController.post('/', authMiddleware, async (req, res) => {
   try {
     const item = req.body;
     if (item) {
@@ -180,7 +180,7 @@ itemRouter.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-itemRouter.put('/:id', authMiddleware, async (req, res) => {
+itemController.put('/:id', authMiddleware, async (req, res) => {
   try {
     const item = req.body;
     const id = +req.params.id || 0;
@@ -195,7 +195,7 @@ itemRouter.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-itemRouter.delete('/:id', authMiddleware, async (req, res) => {
+itemController.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const id = +req.params.id || 0;
     if (id) {

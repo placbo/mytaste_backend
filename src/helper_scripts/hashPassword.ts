@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
 import bcrypt from 'bcrypt';
-import readline from 'readline';
+import readline from 'node:readline';
 
 async function hashPassword(password: string): Promise<string> {
   const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  return hashedPassword;
+  return await bcrypt.hash(password, saltRounds);
 }
 
 if (require.main === module) {

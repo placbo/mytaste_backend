@@ -1,8 +1,8 @@
-import path from 'path';
+import path from 'node:path';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import { ImageFolder, ThumbnailFolder, ThumbPrefix } from '../utils/constants';
-import fs from 'fs';
+import fs from 'node:fs';
 
 export const resizeAndSave = async (buffer: Buffer) => {
   const generatedFilename = `${uuidv4()}.jpg`;

@@ -1,9 +1,9 @@
 import express, { Express, Request, Response } from 'express';
 import logger from 'morgan';
 import cors from 'cors';
-import { authRouter } from './routes/authRoutes';
-import { itemRouter } from './routes/itemRoutes';
-import { imageUploadRouter } from './routes/imageUploadRoutes';
+import { authController } from './controllers/authController';
+import { itemController } from './controllers/itemController';
+import { imageUploadController } from './controllers/imageUploadController';
 import { BasePath, ImageFolder, ServerPort } from './utils/constants';
 import passport from 'passport';
 import session from 'express-session';
@@ -35,9 +35,9 @@ app.get(BasePath + '/status', (_: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/html');
   res.send('Server running!');
 });
-app.use(BasePath + '/auth', authRouter);
-app.use(BasePath + '/items', itemRouter);
-app.use(BasePath + '/imageupload', imageUploadRouter);
+app.use(BasePath + '/auth', authController);
+app.use(BasePath + '/items', itemController);
+app.use(BasePath + '/imageupload', imageUploadController);
 app.use(BasePath + '/images', express.static(ImageFolder));
 
 app.use(session({ secret: 'your_secret_key', resave: false, saveUninitialized: true }));

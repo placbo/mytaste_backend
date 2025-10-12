@@ -4,9 +4,9 @@ import bcrypt from 'bcrypt';
 import { AppAdminPasswordHashed, AppAdminUsername, JwtExpiration, JwtSecret } from '../utils/constants';
 //import {authenticateGoogle, handleGoogleCallback} from '../middleware/passport';
 
-export const authRouter = Router();
+export const authController = Router();
 
-authRouter.post('/login', (req, res) => {
+authController.post('/login', (req, res) => {
   const valid = bcrypt.compareSync(req.body.password, AppAdminPasswordHashed);
   if (!valid) return res.sendStatus(401);
 
