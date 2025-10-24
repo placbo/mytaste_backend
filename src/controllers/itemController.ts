@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import authMiddleware from '../middleware/authMiddleware';
+import { Router, Request, Response } from 'express';
+import { authenticateGoogleUser, requireAdmin } from '../middleware/authMiddleware';
 import { createErrorResponse } from '../utils/responseHelpers';
 import { Item } from '../utils/types';
 import {
@@ -127,7 +127,7 @@ itemController.get('/:id/reviews', async (req, res) => {
 });
 
 //Erstatter alle tags for posten. (Ved nyregistrering)
-itemController.post('/:id/tags', authMiddleware, async (req, res) => {
+itemController.post('/:id/tags', [authenticateGoogleUser, requireAdmin], async (req: Request, res: Response) => {
   try {
     const itemId = +req.params.id || 0;
     const tags: string[] = req.body.tags;
@@ -148,7 +148,7 @@ itemController.post('/:id/tags', authMiddleware, async (req, res) => {
 });
 
 //Legger til 1 tag for posten & personen
-itemController.put('/:id/tags', authMiddleware, async (req, res) => {
+itemController.put('/:id/tags', [authenticateGoogleUser, requireAdmin], async (req: Request, res: Response) => {
   try {
     const id = +req.params.id || 0;
     const tag = req.body.tag;
@@ -166,7 +166,7 @@ itemController.put('/:id/tags', authMiddleware, async (req, res) => {
 });
 
 //NB! ingen put - kun 1 review pr bruker
-itemController.post('/:id/reviews', authMiddleware, async (req, res) => {
+itemController.post('/:id/reviews', [authenticateGoogleUser, requireAdmin], async (req: Request, res: Response) => {
   try {
     const id = +req.params.id || 0;
     const review = req.body;
@@ -181,7 +181,7 @@ itemController.post('/:id/reviews', authMiddleware, async (req, res) => {
   }
 });
 
-itemController.post('/', authMiddleware, async (req, res) => {
+itemController.post('/', [authenticateGoogleUser, requireAdmin], async (req: Request, res: Response) => {
   try {
     const item = req.body;
     if (item) {
@@ -195,7 +195,7 @@ itemController.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-itemController.put('/:id', authMiddleware, async (req, res) => {
+itemController.put('/:id', [authenticateGoogleUser, requireAdmin], async (req: Request, res: Response) => {
   try {
     const item = req.body;
     const id = +req.params.id || 0;
@@ -210,7 +210,7 @@ itemController.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-itemController.delete('/:id', authMiddleware, async (req, res) => {
+itemController.delete('/:id', [authenticateGoogleUser, requireAdmin], async (req: Request, res: Response) => {
   try {
     const id = +req.params.id || 0;
     if (id) {
