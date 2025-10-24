@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+// Load environment variables FIRST, before any other imports that use them
+dotenv.config();
+
 import express, { Express, Request, Response } from 'express';
 import logger from 'morgan';
 import cors from 'cors';
@@ -15,13 +19,31 @@ const baseOrigins = ['localhost:3000', 'mytaste.kasselars.com', 'mytasteapi.kass
 
 const allowedOrigins = baseOrigins.flatMap((h) => [`http://${h}`, `https://${h}`]);
 
+console.log('Allowed CORS origins:', allowedOrigins);
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      console.log('Request origin:', origin);
+      // Allow requests with no origin (like mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        console.log('✓ Origin allowed:', origin);
+        callback(null, true);
+      } else {
+        console.log('✗ Origin not allowed by CORS:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 86400, // 24 hours
   })
 );
 

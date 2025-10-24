@@ -21,7 +21,7 @@ import { emptyOrRows } from '../services/utils';
 
 export const itemController = Router();
 
-itemController.get('/tags', async (req, res) => {
+itemController.get('/tags', async (req: Request, res: Response) => {
   try {
     const result = await getAllTags();
     const tags = emptyOrRows(result);
@@ -35,7 +35,7 @@ itemController.get('/tags', async (req, res) => {
   }
 });
 
-itemController.get('/search', async (req, res) => {
+itemController.get('/search', async (req: Request, res: Response) => {
   try {
     const searchQuery = req.query.q as string;
 
@@ -62,7 +62,7 @@ itemController.get('/search', async (req, res) => {
   }
 });
 
-itemController.get('/', async (req, res) => {
+itemController.get('/', async (req: Request, res: Response) => {
   try {
     let order = 'DESC';
     if (req.query.sort && req.query.sort === 'asc') {
@@ -83,7 +83,7 @@ itemController.get('/', async (req, res) => {
   }
 });
 
-itemController.get('/:id', async (req, res) => {
+itemController.get('/:id', async (req: Request, res: Response) => {
   try {
     const id = +req.params.id || 0;
     const result: Item = await getItemById(id);
@@ -97,7 +97,7 @@ itemController.get('/:id', async (req, res) => {
   }
 });
 
-itemController.get('/:id/tags', async (req, res) => {
+itemController.get('/:id/tags', async (req: Request, res: Response) => {
   try {
     const id = +req.params.id || 0;
     const result = await getTagsByItemId(id);
@@ -112,7 +112,7 @@ itemController.get('/:id/tags', async (req, res) => {
   }
 });
 
-itemController.get('/:id/reviews', async (req, res) => {
+itemController.get('/:id/reviews', async (req: Request, res: Response) => {
   try {
     const id = +req.params.id || 0;
     const result = await getReviewsByItemId(id);

@@ -6,12 +6,8 @@
 
 ### LOGIN
 # @name login
-POST  {{host}}/auth/login
+GET  {{host}}/auth/google
 content-type: application/json
-
-{
-  "password":"test"
-}
 
 ### LAST ITEMS
 GET {{host}}/items

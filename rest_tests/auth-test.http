@@ -1,0 +1,50 @@
+# Google OAuth and Tags Endpoint Test
+# You can use this file with REST clients like REST Client extension in VS Code
+
+### Variables
+@baseUrl = http://localhost:8882/mytaste
+@adminToken = YOUR_ADMIN_TOKEN_HERE
+@nonAdminToken = YOUR_NON_ADMIN_TOKEN_HERE
+
+### 1. Check Server Status
+GET {{baseUrl}}/status
+
+### 2. Test /tags endpoint without authentication (should fail with 401)
+GET {{baseUrl}}/items/tags
+
+### 3. Test /tags endpoint with admin token (should succeed)
+GET {{baseUrl}}/items/tags
+Authorization: Bearer {{adminToken}}
+
+### 4. Test /tags endpoint with non-admin token (should fail with 403)
+GET {{baseUrl}}/items/tags
+Authorization: Bearer {{nonAdminToken}}
+
+### 5. Test /tags endpoint with invalid token (should fail with 401)
+GET {{baseUrl}}/items/tags
+Authorization: Bearer invalid_token_12345
+
+### 6. Initiate Google OAuth (this will redirect to Google login page)
+# Note: This needs to be done in a browser, not programmatically
+# GET {{baseUrl}}/auth/google
+
+### 7. Test getting all items (no auth required)
+GET {{baseUrl}}/items
+
+### 8. Test getting a specific item by ID (no auth required)
+GET {{baseUrl}}/items/1
+
+### 9. Test creating an item (requires admin auth)
+POST {{baseUrl}}/items
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Test Item",
+  "description": "This is a test item",
+  "category": "Test"
+}
+
+### 10. Test searching items (no auth required)
+GET {{baseUrl}}/items/search?q=test
+

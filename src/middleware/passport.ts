@@ -15,14 +15,13 @@ passport.use(
         `http://localhost:${process.env.SERVER_PORT}${process.env.BASE_PATH}/auth/google/callback`,
     },
     (accessToken, refreshToken, profile, done) => {
-      console.log('PROFILE', profile.id);
       const user = {
         id: profile.id,
         displayName: profile.displayName,
         image: profile.photos?.[0].value,
         isAdmin: profile.id === process.env.APP_ADMIN_ID,
       };
-
+      console.log('Authenticated user:', user.displayName);
       return done(null, user);
     }
   )
@@ -44,7 +43,7 @@ export const authenticateGoogle = (req: Request, res: Response, next: NextFuncti
 export const handleGoogleCallback = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate('google', { failureRedirect: '/login' }, (err, user) => {
     if (err) return next(err);
-    if (!user) return res.redirect('/login');
+    if (!user) return res.redirect(`${process.env.FRONTEND_URL}/login`);
     // Generate JWT token with user data
     const token = jwt.sign({ ...user }, process.env.JWT_SECRET ?? '', {
       expiresIn: JwtExpiration,
