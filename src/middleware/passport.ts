@@ -37,7 +37,7 @@ passport.deserializeUser((id, done) => {
 });
 
 export const authenticateGoogle = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate('google', { scope: ['profile'] })(req, res, next);
+  passport.authenticate('google', { scope: ['profile'], prompt: 'select_account' })(req, res, next);
 };
 
 export const handleGoogleCallback = (req: Request, res: Response, next: NextFunction) => {
