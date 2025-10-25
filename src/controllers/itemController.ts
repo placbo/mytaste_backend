@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authenticateGoogleUser, requireAdmin } from '../middleware/authMiddleware';
+import { authenticateGoogleUser, requireAdmin, User } from '../middleware/authMiddleware';
 import { createErrorResponse } from '../utils/responseHelpers';
 import { Item } from '../utils/types';
 import {
@@ -12,10 +12,12 @@ import {
   getItemById,
   getItems,
   getReviewsByItemId,
+  getUserReviewForItem,
   getTagsByItemId,
   searchItems,
   setUsersReviewForItem,
   updateItem,
+  updateUserReviewForItem,
 } from '../services/itemService';
 import { emptyOrRows } from '../services/utils';
 
@@ -112,6 +114,7 @@ itemController.get('/:id/tags', async (req: Request, res: Response) => {
   }
 });
 
+// Get all reviews for all user for a specific item
 itemController.get('/:id/reviews', async (req: Request, res: Response) => {
   try {
     const id = +req.params.id || 0;
@@ -123,6 +126,27 @@ itemController.get('/:id/reviews', async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     createErrorResponse(`Error while getting reviews for item (${req.params.id}) - ${err.message}`, res);
+  }
+});
+
+// Get the logged-in user's review for a specific item
+itemController.get('/:id/review', authenticateGoogleUser, async (req: Request, res: Response) => {
+  try {
+    const id = +req.params.id || 0;
+    const userId = (req.user as User)?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    const result = await getUserReviewForItem(id, userId);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(204).json({ message: 'No review found for this user and item' });
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while getting user review for item (${req.params.id}) - ${err.message}`, res);
   }
 });
 
@@ -165,12 +189,22 @@ itemController.put('/:id/tags', [authenticateGoogleUser, requireAdmin], async (r
   }
 });
 
-//NB! ingen put - kun 1 review pr bruker
-itemController.post('/:id/reviews', [authenticateGoogleUser, requireAdmin], async (req: Request, res: Response) => {
+//Create a new review for the logged-in user
+itemController.post('/:id/reviews', authenticateGoogleUser, async (req: Request, res: Response) => {
   try {
     const id = +req.params.id || 0;
     const review = req.body;
+    const userId = (req.user as User)?.id;
+    const userDisplayName = (req.user as User)?.displayName;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
     if (review) {
+      // Set the user from the authenticated user
+      review.user = userId;
+      review.userDisplayName = userDisplayName;
       await setUsersReviewForItem(id, review);
       res.status(201).json('OK');
     } else {
@@ -178,6 +212,29 @@ itemController.post('/:id/reviews', [authenticateGoogleUser, requireAdmin], asyn
     }
   } catch (err: any) {
     createErrorResponse(`Error while adding review (${err.message})`, res);
+  }
+});
+
+//Update an existing review for the logged-in user
+itemController.put('/:id/reviews', authenticateGoogleUser, async (req: Request, res: Response) => {
+  try {
+    const id = +req.params.id || 0;
+    const userId = (req.user as User)?.id;
+    const userDisplayName = (req.user as User)?.displayName;
+    const review = { ...req.body, user: userId, userDisplayName };
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (review) {
+      await updateUserReviewForItem(id, review);
+      res.status(200).json('OK');
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch (err: any) {
+    createErrorResponse(`Error while updating review (${err.message})`, res);
   }
 });
 

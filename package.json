@@ -10,7 +10,8 @@
     "build": "npx tsc",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "start": "npx nodemon ./src/server.ts"
+    "start": "npx nodemon ./src/server.ts",
+    "migrate:userDisplayName": "npx ts-node ./src/scripts/migrate-add-userDisplayName.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",

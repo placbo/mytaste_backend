@@ -17,6 +17,7 @@ export interface Review extends RowDataPacket {
   reviewId: number;
   itemId: number;
   user: string;
+  userDisplayName?: string;
   comment: string;
   rating: number;
 }
